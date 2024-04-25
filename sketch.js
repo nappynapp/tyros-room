@@ -1,6 +1,13 @@
 let player;
 let pressedKeys = {};
-let debugMode = true;
+let debugMode = false;
+let bedroom, tyro, beanbag, shelf, bed, closet, toybox, table, pile, speechbox, tyrospeechbox, pixel, mono, tyroBack, tyroFront, tyroLeft, tyroRight
+let monoFont = false;
+
+function preload() {
+  pixel = loadFont("PixelifySans-VariableFont_wght.ttf");
+  mono = loadFont("SyneMono-Regular.ttf");
+}
 
 function setup() {
   createCanvas(600, 600);
@@ -9,6 +16,10 @@ function setup() {
   //props
   bedroom = loadImage("tyros_room_floor_and_wall.png");
   tyro = loadImage("tyro_front.png");
+  tyroFront = loadImage("tyro_front.png")
+  tyroBack = loadImage ("tyro_back.png")
+  tyroLeft = loadImage("tyro_left.png")
+  tyroRight = loadImage("tyro_right.png")
   beanbag = loadImage("tyro_beanbag.png");
   shelf = loadImage("tyro_shelf.png");
   bed = loadImage("tyro_bed.png");
@@ -49,10 +60,7 @@ function keyReleased() {
   delete pressedKeys[key];
 }
 
-function preload() {
-  pixel = loadFont("PixelifySans-VariableFont_wght.ttf");
-  mono = loadFont("SyneMono-Regular.ttf");
-}
+
 
 class Player {
   constructor(x, y) {
@@ -73,15 +81,19 @@ class Player {
 
     if (pressedKeys.a) {
       mvmt.x -= 1;
+      tyro = tyroLeft;
     }
-    if (pressedKeys.d) {
+    else if (pressedKeys.d) {
       mvmt.x += 1;
+      tyro = tyroRight
     }
-    if (pressedKeys.w) {
+    else if (pressedKeys.w) {
       mvmt.y -= 1;
+      tyro = tyroBack
     }
-    if (pressedKeys.s) {
+    else if (pressedKeys.s) {
       mvmt.y += 1;
+      tyro = tyroFront
     }
 
     mvmt.setMag(this.speed);
@@ -109,11 +121,10 @@ class Player {
     fill(133, 204, 255);
     stroke(24, 69, 148);
     strokeWeight(7);
-    textFont(pixel);
-    textSize(30);
-
+    
     // pile boundary check
     if (this.x < 130 && this.y < 125) {
+      monoFont = false;
       this.currentText = "my snack pile.";
 
       // if player was moving in x direction
@@ -126,9 +137,9 @@ class Player {
         //console.log("pile y was hit")
       }
     }
-
     // tent boundary check
     if (this.x > 340 && this.y < 260) {
+      monoFont = false;
       this.currentText = "My cave...aka my bed";
       if (this.x != this.xPrev) {
         this.x = 340;
@@ -140,6 +151,7 @@ class Player {
 
     //beanbag boundary check
     if (this.x > 340 && this.y > 330) {
+      monoFont = false;
       this.currentText = "Very comfy";
       if (this.x != this.xPrev) {
         this.x = 340;
@@ -151,6 +163,7 @@ class Player {
 
     //table boundary check
     if (this.x < 325 && this.y > 129 && this.x > 100 && this.y < 365) {
+      monoFont = false;
       this.currentText =
         "My friend visited a while ago and didn't clean up after themselves...rude.";
       if (this.x != this.xPrev) {
@@ -171,6 +184,7 @@ class Player {
 
     //toybox boundary check
     if (this.x < 70 && this.y < 380 && this.y > 190) {
+      monoFont = false;
       this.currentText =
         "I mostly have tools to make snacks in here. I don't really play with toys other than this red ball.";
       if (this.x != this.xPrev) {
@@ -186,30 +200,25 @@ class Player {
       // if (this.y != this.yPrev) {
       //   this.y = 190;
       // }
-    }
-
-    fill(133, 204, 255);
-    stroke(24, 69, 148);
-    strokeWeight(7);
-    textFont(pixel);
-    textSize(30);
-    
-    //closet boundary check not working
-    if (this.y < 80 && this.x < 290 && this.x < 70) {
+    }  
+    //closet boundary check
+    if (this.y < 65 && this.x < 290) {
+      monoFont = false;
       this.currentText =
-        "I don't think it's a good idea to look in there right now..";
+        "...I don't think it's a good idea to look in there right now..";
       if (this.y != this.yPrev) {
-        this.y = 80;
+        this.y = 65;
       }
       if (this.x != this.xPrev) {
         this.x = 290;
       }
-      if (this.x != this.xPrev) {
-        this.x = 70;
-      }
+      monoFont = true
     }
+    
+    
     //shelf boundary check
     if (this.y > 440) {
+      monoFont = false;
       this.currentText = "My friends.";
       if (this.y != this.yPrev) {
         this.y = 440;
@@ -229,31 +238,43 @@ class Player {
 
     if (this.drawTextBox) {
       image(tyrospeechbox, 0, 390);
-      text(this.currentText, 0, 0, 200, 200);
+      
+      
+      textSize(26);
+      textAlign(LEFT, CENTER)
+      
+      textFont(pixel);
+      
+      if(monoFont) {
+        textFont(mono);
+      }
+      text(this.currentText, 180, 390, width-220, 240);
     }
   }
 }
 
 function debug() {
-  //let stepSize = 20;
-  //textSize(10);
-  //strokeWeight(1);
-  //for (let y = 0; y < height; y += stepSize) {
-  //stroke(0);
-  //line(0, y, width, y);
-  //noStroke();
-  //text(y, 0, y);
-  //for (let x = 0; x < width; x += stepSize) {
-  //stroke(0);
-  //line(x, 0, x, height);
-  //noStroke();
-  //text(x, x, stepSize / 2);
-  //}
-  //}
-  //push();
-  //textSize(20);
-  //fill(255);
-  //stroke(0);
-  //text(`${player.x}, ${player.y}`, player.x, player.y);
-  //pop();
+  let stepSize = 20;
+  fill(0)
+  textSize(10);
+  strokeWeight(1);
+  for (let y = 0; y < height; y += stepSize) {
+  stroke(0);
+  line(0, y, width, y);
+  noStroke();
+  text(y, 0, y);
+  for (let x = 0; x < width; x += stepSize) {
+  stroke(0);
+  line(x, 0, x, height);
+  noStroke();
+  text(x, x, stepSize / 2);
+  }
+  }
+  push();
+  textSize(20);
+  fill(255);
+  stroke(0);
+  text(`${player.x}, ${player.y}`, player.x, player.y);
+  pop();
+  //player.currentText = "I mostly have tools to make snacks in here. I don't really play with toys other than this red ball."
 }
